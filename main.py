@@ -39,16 +39,20 @@ with st.expander("➕ Ajouter une nouvelle entrée"):
         
         submitted = st.form_submit_button("Ajouter")
         if submitted:
+            # Convert date to string format first
+            date_str = date.strftime('%Y-%m-%d')
             new_data = pd.DataFrame({
-                "Date": [pd.to_datetime(date)],
+                "Date": [date_str],
                 "Sommeil (h)": [sommeil],
                 "Activite physique (min)": [activite],
                 "Humeur (/10)": [humeur],
                 "Calories consommees": [calories]
             })
-            df = pd.concat([df, new_data], ignore_index=True)
-            df = df.sort_values("Date", ascending=True)
+            # Ensure dates are in datetime format before concatenation
+            new_data["Date"] = pd.to_datetime(new_data["Date"])
             df["Date"] = pd.to_datetime(df["Date"])
+            df = pd.concat([df, new_data], ignore_index=True)
+            df = df.sort_values(by="Date", ascending=True)
             save_data(df)
             st.success("✅ Données ajoutées avec succès!")
             st.experimental_rerun()
