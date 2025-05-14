@@ -11,9 +11,8 @@ st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv("data.csv")
-        df["Date"] = pd.to_datetime(df["Date"])
-        return df
+        df = pd.read_csv("data.csv", parse_dates=['Date'])
+        return df.sort_values('Date', ascending=True)
     except:
         return pd.DataFrame(columns=["Date", "Sommeil (h)", "Activite physique (min)", "Humeur (/10)", "Calories consommees"])
 
@@ -41,18 +40,15 @@ with st.expander("➕ Ajouter une nouvelle entrée"):
         if submitted:
             # Convert date to string format first
             date_str = date.strftime('%Y-%m-%d')
-            new_data = pd.DataFrame({
-                "Date": [date_str],
-                "Sommeil (h)": [sommeil],
-                "Activite physique (min)": [activite],
-                "Humeur (/10)": [humeur],
-                "Calories consommees": [calories]
-            })
-            # Ensure dates are in datetime format before concatenation
-            new_data["Date"] = pd.to_datetime(new_data["Date"])
-            df["Date"] = pd.to_datetime(df["Date"])
+            new_data = pd.DataFrame([{
+                "Date": pd.Timestamp(date),
+                "Sommeil (h)": sommeil,
+                "Activite physique (min)": activite,
+                "Humeur (/10)": humeur,
+                "Calories consommees": calories
+            }])
             df = pd.concat([df, new_data], ignore_index=True)
-            df = df.sort_values(by="Date", ascending=True)
+            df = df.sort_values('Date', ascending=True)
             save_data(df)
             st.success("✅ Données ajoutées avec succès!")
             st.experimental_rerun()
