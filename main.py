@@ -11,7 +11,8 @@ st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_csv("data.csv", parse_dates=['Date'])
+        df = pd.read_csv("data.csv")
+        df['Date'] = pd.to_datetime(df['Date']).dt.date
         return df.sort_values('Date', ascending=True)
     except:
         return pd.DataFrame(columns=["Date", "Sommeil (h)", "Activite physique (min)", "Humeur (/10)", "Calories consommees"])
@@ -41,7 +42,7 @@ with st.expander("➕ Ajouter une nouvelle entrée"):
             # Convert date to string format first
             date_str = date.strftime('%Y-%m-%d')
             new_data = pd.DataFrame([{
-                "Date": pd.Timestamp(date),
+                "Date": date,
                 "Sommeil (h)": sommeil,
                 "Activite physique (min)": activite,
                 "Humeur (/10)": humeur,
