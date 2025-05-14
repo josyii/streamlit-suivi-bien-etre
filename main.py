@@ -12,7 +12,8 @@ st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 def load_data():
     try:
         df = pd.read_csv("data.csv")
-        df['Date'] = pd.to_datetime(df['Date'])
+        df['Date'] = pd.to_datetime(df['Date']).dt.date
+        df = df.sort_values('Date')
         return df
     except:
         return pd.DataFrame(columns=["Date", "Sommeil (h)", "Activite physique (min)", "Humeur (/10)", "Calories consommees"])
