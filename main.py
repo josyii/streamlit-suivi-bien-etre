@@ -1,14 +1,23 @@
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime
 
-df = pd.read_csv("data.csv")
-df["Date"] = pd.to_datetime(df["Date"])
+# Configuration de la page
+st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
+
+# Chargement des données
+@st.cache_data
+def load_data():
+    df = pd.read_csv("data.csv")
+    df["Date"] = pd.to_datetime(df["Date"])
+    return df
+
+df = load_data()
 
 st.title("📊 Suivi Bien-Être Personnel")
 st.markdown("Bienvenue dans votre application de suivi bien-être.")
-
-import datetime
 
 date_min = df["Date"].min().to_pydatetime()
 date_max = df["Date"].max().to_pydatetime()
@@ -33,6 +42,6 @@ col3.metric("Humeur", f"{df_filtered['Humeur (/10)'].mean():.1f} /10")
 col4.metric("Calories", f"{df_filtered['Calories consommees'].mean():.0f} kcal")
 
 if df_filtered['Sommeil (h)'].mean() < 6.5:
-    st.warning("💤 Essayez d’augmenter votre sommeil pour améliorer votre humeur.")
+    st.warning("💤 Essayez d'augmenter votre sommeil pour améliorer votre humeur.")
 else:
     st.success("✅ Votre durée de sommeil semble satisfaisante !")
