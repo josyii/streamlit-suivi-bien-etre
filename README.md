@@ -43,3 +43,14 @@ streamlit-suivi-bien-etre/
 ```bash
 pip install streamlit pandas matplotlib
 streamlit run app.py
+## 📷 Aperçu de l'application
+
+Voici un aperçu de l'application Streamlit "Suivi Bien-Être" :
+
+![Aperçu de l'application](screenshot.png)
+
+
+🙋 Réalisé par
+
+Projet réalisé par Josiane, étudiante en Master Management des Systèmes d’Information,
+dans le cadre de la constitution d’un portfolio orienté Data / Business / Projet.
