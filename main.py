@@ -1,8 +1,7 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
+import datetime
 
 # Configuration de la page
 st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
@@ -12,7 +11,8 @@ st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 def load_data():
     try:
         df = pd.read_csv("data.csv")
-        df['Date'] = pd.to_datetime(df['Date']).dt.date
+        # Convertir les dates en datetime (pas en date)
+        df['Date'] = pd.to_datetime(df['Date'])
         df = df.sort_values('Date')
         return df
     except:
@@ -31,26 +31,28 @@ with st.expander("➕ Ajouter une nouvelle entrée"):
     with st.form("entry_form"):
         col1, col2 = st.columns(2)
         with col1:
-            date = st.date_input("Date", datetime.now())
+            date = st.date_input("Date", datetime.datetime.now())
             sommeil = st.number_input("Sommeil (h)", 0.0, 24.0, 7.0, 0.1)
             activite = st.number_input("Activité physique (min)", 0, 300, 30)
         with col2:
             humeur = st.slider("Humeur (/10)", 0, 10, 5)
             calories = st.number_input("Calories consommées", 0, 5000, 2000)
-        
+
         submitted = st.form_submit_button("Ajouter")
         if submitted:
-            # Convert date to string format first
-            date_str = date.strftime('%Y-%m-%d')
+            # Convertir le date_input en datetime pour cohérence
+            date_datetime = pd.Timestamp(date)
+
             new_data = pd.DataFrame([{
-                "Date": date,
+                "Date": date_datetime,
                 "Sommeil (h)": sommeil,
                 "Activite physique (min)": activite,
                 "Humeur (/10)": humeur,
                 "Calories consommees": calories
             }])
+
             df = pd.concat([df, new_data], ignore_index=True)
-            df = df.sort_values('Date', ascending=True)
+            df = df.sort_values('Date')
             save_data(df)
             st.success("✅ Données ajoutées avec succès!")
             st.experimental_rerun()
@@ -58,10 +60,21 @@ with st.expander("➕ Ajouter une nouvelle entrée"):
 st.markdown("Bienvenue dans votre application de suivi bien-être.")
 
 if not df.empty:
-    date_min = df["Date"].min().to_pydatetime()
-    date_max = df["Date"].max().to_pydatetime()
-    date_range = st.slider("Sélectionner la période :", min_value=date_min, max_value=date_max, value=(date_min, date_max))
-    df_filtered = df[(df["Date"] >= date_range[0]) & (df["Date"] <= date_range[1])]
+    # Utiliser des timestamps plutôt que des dates pour le slider
+    date_min = df["Date"].min()
+    date_max = df["Date"].max()
+
+    # Convertir en datetime pour le slider
+    date_range = st.slider(
+        "Sélectionner la période :", 
+        min_value=date_min.to_pydatetime(),
+        max_value=date_max.to_pydatetime(),
+        value=(date_min.to_pydatetime(), date_max.to_pydatetime())
+    )
+
+    # Filtrer les données
+    df_filtered = df[(df["Date"] >= pd.Timestamp(date_range[0])) & 
+                    (df["Date"] <= pd.Timestamp(date_range[1]))]
 
     st.subheader("📈 Évolution quotidienne")
     fig, ax = plt.subplots(figsize=(10, 5))
