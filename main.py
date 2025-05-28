@@ -1,7 +1,7 @@
     import streamlit as st
-    import pandas as pd
-    from datetime import datetime
-    import time  # <-- ajout
+import pandas as pd
+from datetime import datetime
+import time  # <-- ajout
 
     st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 
