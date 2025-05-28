@@ -1,8 +1,6 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import time  # <-- ajout
 
 st.set_page_config(page_title="Suivi Bien-Être Personnel", layout="wide")
 
@@ -39,8 +37,6 @@ with st.form("entry_form"):
         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
         save_data(df)
         st.success("✅ Données ajoutées avec succès!")
-        time.sleep(0.5)  # <-- ajout ici
-        st.experimental_rerun()
 
 # Display data if available
 if not df.empty:
